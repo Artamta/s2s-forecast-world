@@ -1,0 +1,17 @@
+{
+  "name": "s2s-forecast-world",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q tests/world"
+  },
+  "devDependencies": {
+    "rollup": "npm:@rollup/wasm-node@^4.62.3",
+    "typescript": "5.9.2",
+    "vite": "7.3.6"
+  }
+}

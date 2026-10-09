@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
+    <meta
+      name="description"
+      content="S2S Research: experimental six-week rainfall and temperature outlook for any region of the world."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="./brand/s2s-research-mark.svg" type="image/svg+xml" />
+    <title>S2S Research · World subseasonal outlook</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <div id="app">
+      <div class="boot-state">
+        <p>Loading the world outlook…</p>
+      </div>
+    </div>
+    <script type="module" src="/src/world/main.ts"></script>
+  </body>
+</html>

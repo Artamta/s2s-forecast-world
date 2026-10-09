@@ -1,0 +1,10 @@
+{
+  "private_root": "/storage/raj.ayush/s2s_final_data/final_iteration/world_dashboard_v1",
+  "natural_earth": "/home/raj.ayush/.local/share/cartopy/shapefiles/natural_earth",
+  "window_cache": "/storage/raj.ayush/s2s_final_data/final_iteration/abc_pbc_baseline_v1/cache/fuxi_windows_v1.zarr",
+  "native_reforecast": "/storage/raj.ayush/s2s_final_data/final_iteration/model-runs/fuxi/native_reforecast_global_2002_2021.zarr",
+  "era5_truth": "/storage/raj.ayush/s2s_final_data/final_iteration/abc_pbc_baseline_v1/truth/era5_global.zarr",
+  "imerg_daily": "/storage/raj.ayush/s2s_final_data/final_iteration/model-runs/fuxi/imerg_final_v07b_global_2002_2021/imerg_final_v07b_daily_fuxi_1p5_2002_2024.zarr",
+  "operational_root": "/storage/raj.ayush/s2s_final_data/final_iteration/model-runs/fuxi/operational",
+  "admin0_countries": "/storage/raj.ayush/s2s_final_data/final_iteration/world_dashboard_v1/static/natural_earth_india_view/cultural/ne_10m_admin_0_countries_ind.shp"
+}

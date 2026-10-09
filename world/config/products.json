@@ -1,0 +1,639 @@
+{
+  "schema_version": 1,
+  "fields": {
+    "rain_mean": {
+      "dtype": "u16le",
+      "scale": 0.1,
+      "offset": 0,
+      "layers": [
+        "mean"
+      ],
+      "units": "mm/week"
+    },
+    "rain_q": {
+      "dtype": "u16le",
+      "scale": 0.1,
+      "offset": 0,
+      "layers": [
+        "p10",
+        "p50",
+        "p90"
+      ],
+      "units": "mm/week"
+    },
+    "rain_anom": {
+      "dtype": "u16le",
+      "scale": 0.1,
+      "offset": -3000,
+      "layers": [
+        "anom"
+      ],
+      "units": "mm/week",
+      "needs_climate": true
+    },
+    "rain_terc": {
+      "dtype": "u16le",
+      "scale": 0.1,
+      "offset": 0,
+      "layers": [
+        "q33",
+        "q67"
+      ],
+      "units": "mm/week",
+      "needs_climate": true
+    },
+    "rain_prob": {
+      "dtype": "u8",
+      "scale": 1,
+      "offset": 0,
+      "layers": [
+        "below",
+        "above"
+      ],
+      "units": "%",
+      "needs_climate": true,
+      "dry": 254
+    },
+    "t2m_mean": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -150,
+      "layers": [
+        "mean"
+      ],
+      "units": "°C"
+    },
+    "t2m_q": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -150,
+      "layers": [
+        "p10",
+        "p50",
+        "p90"
+      ],
+      "units": "°C"
+    },
+    "t2m_anom": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -100,
+      "layers": [
+        "anom"
+      ],
+      "units": "°C",
+      "needs_climate": true
+    },
+    "t2m_terc": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -150,
+      "layers": [
+        "q33",
+        "q67"
+      ],
+      "units": "°C",
+      "needs_climate": true
+    },
+    "t2m_prob": {
+      "dtype": "u8",
+      "scale": 1,
+      "offset": 0,
+      "layers": [
+        "below",
+        "above"
+      ],
+      "units": "%",
+      "needs_climate": true
+    },
+    "wind850": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -200,
+      "layers": [
+        "u",
+        "v"
+      ],
+      "units": "m/s"
+    },
+    "wind850_anom": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -200,
+      "layers": [
+        "u",
+        "v"
+      ],
+      "units": "m/s",
+      "needs_climate": true
+    },
+    "olr_anom": {
+      "dtype": "u16le",
+      "scale": 0.1,
+      "offset": -400,
+      "layers": [
+        "anom"
+      ],
+      "units": "W/m²",
+      "needs_climate": true
+    },
+    "sst_anom": {
+      "dtype": "u16le",
+      "scale": 0.01,
+      "offset": -100,
+      "layers": [
+        "anom"
+      ],
+      "units": "°C",
+      "needs_climate": true
+    }
+  },
+  "dry_week_threshold_mm": 1.0,
+  "products": [
+    {
+      "id": "rain_prob",
+      "variable": "rain",
+      "label": "Rainfall outlook",
+      "short_label": "Rain outlook",
+      "description": "Most likely rainfall category for the week: below, near or above the normal range for the time of year.",
+      "kind": "tercile",
+      "field": "rain_prob",
+      "units": "%",
+      "legend": {
+        "steps": [
+          40,
+          55,
+          70
+        ],
+        "below": [
+          "#e8b872",
+          "#d39a45",
+          "#a8691c"
+        ],
+        "above": [
+          "#86bde3",
+          "#4f9dce",
+          "#1f6fa5"
+        ],
+        "near": "#eef0f2",
+        "none": "#eef0f2",
+        "below_label": "Drier",
+        "above_label": "Wetter",
+        "near_label": "Near normal",
+        "bar": {
+          "below": "#d39a45",
+          "near": "#b9c0c7",
+          "above": "#4f9dce"
+        }
+      },
+      "group": "Rainfall"
+    },
+    {
+      "id": "rain_anom",
+      "variable": "rain",
+      "label": "Rainfall vs normal",
+      "short_label": "Rain anomaly",
+      "description": "Ensemble-mean weekly rainfall minus the model's own normal for the same lead and time of year.",
+      "kind": "field",
+      "field": "rain_anom",
+      "layer": "anom",
+      "units": "mm/week",
+      "legend": {
+        "boundaries": [
+          -100,
+          -50,
+          -25,
+          -10,
+          10,
+          25,
+          50,
+          100
+        ],
+        "colors": [
+          "#a8691c",
+          "#d39a45",
+          "#e8b872",
+          "#eef0f2",
+          "#86bde3",
+          "#4f9dce",
+          "#1f6fa5"
+        ],
+        "under": "#7a4a10",
+        "over": "#154f78"
+      },
+      "group": "Rainfall"
+    },
+    {
+      "id": "rain_mean",
+      "variable": "rain",
+      "label": "Rainfall total",
+      "short_label": "Rain total",
+      "description": "Ensemble-mean rainfall accumulated over the seven days of the forecast week.",
+      "kind": "field",
+      "field": "rain_mean",
+      "layer": "mean",
+      "units": "mm/week",
+      "legend": {
+        "boundaries": [
+          1,
+          5,
+          10,
+          25,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300
+        ],
+        "colors": [
+          "#e4f0f8",
+          "#c9e1f1",
+          "#a9d0ea",
+          "#86bde3",
+          "#69abd8",
+          "#4f9dce",
+          "#3686bb",
+          "#1f6fa5",
+          "#154f78"
+        ],
+        "under": "#eef0f2",
+        "over": "#0e3857"
+      },
+      "group": "Rainfall"
+    },
+    {
+      "id": "rain_p10",
+      "variable": "rain",
+      "label": "Rainfall, dry scenario",
+      "short_label": "Rain P10",
+      "description": "Weekly rainfall that 9 in 10 ensemble members exceed.",
+      "kind": "field",
+      "field": "rain_q",
+      "layer": "p10",
+      "units": "mm/week",
+      "legend_of": "rain_mean",
+      "group": "Rainfall"
+    },
+    {
+      "id": "rain_p90",
+      "variable": "rain",
+      "label": "Rainfall, wet scenario",
+      "short_label": "Rain P90",
+      "description": "Weekly rainfall that only 1 in 10 ensemble members exceed.",
+      "kind": "field",
+      "field": "rain_q",
+      "layer": "p90",
+      "units": "mm/week",
+      "legend_of": "rain_mean",
+      "group": "Rainfall"
+    },
+    {
+      "id": "t2m_prob",
+      "variable": "t2m",
+      "label": "Temperature outlook",
+      "short_label": "Temp outlook",
+      "description": "Most likely temperature category for the week: below, near or above the normal range for the time of year.",
+      "kind": "tercile",
+      "field": "t2m_prob",
+      "units": "%",
+      "legend": {
+        "steps": [
+          40,
+          55,
+          70
+        ],
+        "below": [
+          "#86bde3",
+          "#4f9dce",
+          "#1f6fa5"
+        ],
+        "above": [
+          "#f0a08a",
+          "#e07a5f",
+          "#b9442b"
+        ],
+        "near": "#eef0f2",
+        "none": "#eef0f2",
+        "below_label": "Cooler",
+        "above_label": "Warmer",
+        "near_label": "Near normal",
+        "bar": {
+          "below": "#4f9dce",
+          "near": "#b9c0c7",
+          "above": "#e07a5f"
+        }
+      },
+      "group": "Temperature"
+    },
+    {
+      "id": "t2m_anom",
+      "variable": "t2m",
+      "label": "Temperature vs normal",
+      "short_label": "Temp anomaly",
+      "description": "Ensemble-mean weekly 2 m temperature minus the model's own normal for the same lead and time of year.",
+      "kind": "field",
+      "field": "t2m_anom",
+      "layer": "anom",
+      "units": "°C",
+      "legend": {
+        "boundaries": [
+          -6,
+          -4,
+          -2,
+          -1,
+          -0.5,
+          0.5,
+          1,
+          2,
+          4,
+          6
+        ],
+        "colors": [
+          "#1f6fa5",
+          "#4f9dce",
+          "#86bde3",
+          "#c3ddf0",
+          "#eef0f2",
+          "#f8cfc2",
+          "#f0a08a",
+          "#e07a5f",
+          "#b9442b"
+        ],
+        "under": "#154f78",
+        "over": "#8a2c1a"
+      },
+      "group": "Temperature"
+    },
+    {
+      "id": "t2m_mean",
+      "variable": "t2m",
+      "label": "Temperature",
+      "short_label": "Temperature",
+      "description": "Ensemble-mean 2 m temperature averaged over the forecast week.",
+      "kind": "field",
+      "field": "t2m_mean",
+      "layer": "mean",
+      "units": "°C",
+      "legend": {
+        "boundaries": [
+          -30,
+          -20,
+          -10,
+          0,
+          5,
+          10,
+          15,
+          20,
+          24,
+          27,
+          30,
+          33,
+          36
+        ],
+        "colors": [
+          "#154f78",
+          "#1f6fa5",
+          "#4f9dce",
+          "#86bde3",
+          "#c3ddf0",
+          "#e4eef5",
+          "#eef0f2",
+          "#f8cfc2",
+          "#f0a08a",
+          "#e07a5f",
+          "#c95a3f",
+          "#b9442b"
+        ],
+        "under": "#0e3857",
+        "over": "#8a2c1a"
+      },
+      "group": "Temperature"
+    },
+    {
+      "id": "wind850",
+      "variable": "wind",
+      "label": "Wind at 1.5 km",
+      "short_label": "Wind 850",
+      "description": "Ensemble-mean wind about 1.5 km above sea level, averaged over the forecast week. Shading is speed; arrows show direction.",
+      "kind": "wind",
+      "field": "wind850",
+      "units": "m/s",
+      "legend": {
+        "boundaries": [
+          0,
+          2,
+          4,
+          6,
+          8,
+          10,
+          14,
+          18
+        ],
+        "colors": [
+          "#e4f0f8",
+          "#c9e1f1",
+          "#a9d0ea",
+          "#86bde3",
+          "#69abd8",
+          "#4f9dce",
+          "#3686bb"
+        ],
+        "under": "#eef0f2",
+        "over": "#1f6fa5"
+      },
+      "group": "Circulation and ocean"
+    },
+    {
+      "id": "olr_anom",
+      "variable": "olr",
+      "label": "Convection vs normal",
+      "short_label": "OLR anomaly",
+      "description": "Outgoing longwave radiation minus the model normal. Negative values mean more deep cloud and usually more rain than normal; positive values mean clearer, drier conditions.",
+      "kind": "field",
+      "field": "olr_anom",
+      "layer": "anom",
+      "units": "W/m²",
+      "legend": {
+        "boundaries": [
+          -40,
+          -25,
+          -15,
+          -5,
+          5,
+          15,
+          25,
+          40
+        ],
+        "colors": [
+          "#1f6fa5",
+          "#4f9dce",
+          "#86bde3",
+          "#eef0f2",
+          "#e8b872",
+          "#d39a45",
+          "#a8691c"
+        ],
+        "under": "#154f78",
+        "over": "#7a4a10"
+      },
+      "group": "Circulation and ocean"
+    },
+    {
+      "id": "sst_anom",
+      "variable": "sst",
+      "label": "Sea temperature vs normal",
+      "short_label": "SST anomaly",
+      "description": "Ensemble-mean sea-surface temperature minus the model normal for the same lead and time of year. Land is left blank.",
+      "kind": "field",
+      "field": "sst_anom",
+      "layer": "anom",
+      "units": "°C",
+      "legend": {
+        "boundaries": [
+          -3,
+          -2,
+          -1,
+          -0.5,
+          0.5,
+          1,
+          2,
+          3
+        ],
+        "colors": [
+          "#1f6fa5",
+          "#4f9dce",
+          "#86bde3",
+          "#eef0f2",
+          "#f0a08a",
+          "#e07a5f",
+          "#b9442b"
+        ],
+        "under": "#154f78",
+        "over": "#8a2c1a"
+      },
+      "group": "Circulation and ocean"
+    },
+    {
+      "id": "wind850_anom",
+      "variable": "wind",
+      "label": "Wind vs normal",
+      "short_label": "Wind anomaly",
+      "description": "Ensemble-mean wind about 1.5 km above sea level minus the model normal. Shading is the size of the departure; arrows show its direction.",
+      "kind": "wind",
+      "field": "wind850_anom",
+      "units": "m/s",
+      "legend": {
+        "boundaries": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          8
+        ],
+        "colors": [
+          "#e4f0f8",
+          "#c9e1f1",
+          "#a9d0ea",
+          "#86bde3",
+          "#69abd8",
+          "#4f9dce"
+        ],
+        "under": "#eef0f2",
+        "over": "#3686bb"
+      },
+      "group": "Circulation and ocean"
+    }
+  ],
+  "skill": {
+    "metrics": [
+      {
+        "id": "bss",
+        "label": "Tercile Brier skill score",
+        "short_label": "BSS",
+        "description": "How much better the below- and above-normal chances were than always saying one in three. Above 0 beats climatology; 1 is perfect."
+      },
+      {
+        "id": "acc",
+        "label": "Anomaly correlation",
+        "short_label": "ACC",
+        "description": "Correlation between the ensemble-mean anomaly and the observed anomaly across cases. 1 is perfect; 0 is none."
+      },
+      {
+        "id": "crpss",
+        "label": "CRPS skill score",
+        "short_label": "CRPSS",
+        "description": "How much closer the whole bias-corrected ensemble was to what happened than a climatological ensemble. Above 0 beats climatology."
+      },
+      {
+        "id": "msss",
+        "label": "Mean-square skill score",
+        "short_label": "MSSS",
+        "description": "How much smaller the ensemble-mean anomaly error was than the error of forecasting the normal. Above 0 beats climatology."
+      }
+    ],
+    "legends": {
+      "score": {
+        "boundaries": [
+          -0.2,
+          -0.1,
+          -0.05,
+          -0.02,
+          0.02,
+          0.05,
+          0.1,
+          0.2,
+          0.4
+        ],
+        "colors": [
+          "#a8691c",
+          "#d39a45",
+          "#e8b872",
+          "#eef0f2",
+          "#c3ddf0",
+          "#86bde3",
+          "#4f9dce",
+          "#1f6fa5"
+        ],
+        "under": "#7a4a10",
+        "over": "#154f78"
+      },
+      "acc": {
+        "boundaries": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8
+        ],
+        "colors": [
+          "#e4f0f8",
+          "#c9e1f1",
+          "#a9d0ea",
+          "#86bde3",
+          "#4f9dce",
+          "#1f6fa5",
+          "#154f78"
+        ],
+        "under": "#eef0f2",
+        "over": "#0e3857"
+      }
+    },
+    "truths": {
+      "era5": "ERA5 reanalysis",
+      "imerg": "IMERG satellite rainfall"
+    },
+    "seasons": {
+      "all": "All year",
+      "djf": "Dec–Feb starts",
+      "mam": "Mar–May starts",
+      "jja": "Jun–Aug starts",
+      "son": "Sep–Nov starts"
+    }
+  }
+}

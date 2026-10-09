@@ -1,0 +1,688 @@
+{
+  "schema_version": 1,
+  "default_region": "seasia",
+  "groups": [
+    {
+      "id": "world",
+      "label": "World",
+      "view": {
+        "west": -30,
+        "east": 330,
+        "south": -60,
+        "north": 80
+      }
+    },
+    {
+      "id": "seasia",
+      "label": "Southeast Asia & Maritime Continent",
+      "view": {
+        "west": 90,
+        "east": 155,
+        "south": -13,
+        "north": 29
+      }
+    },
+    {
+      "id": "easia",
+      "label": "East Asia",
+      "view": {
+        "west": 72,
+        "east": 150,
+        "south": 15,
+        "north": 55
+      }
+    },
+    {
+      "id": "sasia",
+      "label": "South Asia",
+      "view": {
+        "west": 58,
+        "east": 100,
+        "south": 3,
+        "north": 40
+      }
+    },
+    {
+      "id": "wcasia",
+      "label": "West & Central Asia",
+      "view": {
+        "west": 25,
+        "east": 90,
+        "south": 10,
+        "north": 57
+      }
+    },
+    {
+      "id": "pacific",
+      "label": "Australia & Pacific",
+      "view": {
+        "west": 108,
+        "east": 232,
+        "south": -50,
+        "north": 25
+      }
+    },
+    {
+      "id": "africa",
+      "label": "Africa",
+      "view": {
+        "west": -20,
+        "east": 55,
+        "south": -37,
+        "north": 39
+      }
+    },
+    {
+      "id": "europe",
+      "label": "Europe",
+      "view": {
+        "west": -27,
+        "east": 50,
+        "south": 33,
+        "north": 72
+      }
+    },
+    {
+      "id": "namerica",
+      "label": "North & Central America",
+      "view": {
+        "west": 190,
+        "east": 310,
+        "south": 5,
+        "north": 75
+      }
+    },
+    {
+      "id": "samerica",
+      "label": "South America",
+      "view": {
+        "west": 275,
+        "east": 330,
+        "south": -57,
+        "north": 15
+      }
+    }
+  ],
+  "subregion_groups": {
+    "South-Eastern Asia": "seasia",
+    "Eastern Asia": "easia",
+    "Southern Asia": "sasia",
+    "Central Asia": "wcasia",
+    "Western Asia": "wcasia",
+    "Australia and New Zealand": "pacific",
+    "Melanesia": "pacific",
+    "Micronesia": "pacific",
+    "Polynesia": "pacific",
+    "Northern Africa": "africa",
+    "Western Africa": "africa",
+    "Middle Africa": "africa",
+    "Eastern Africa": "africa",
+    "Southern Africa": "africa",
+    "Northern Europe": "europe",
+    "Western Europe": "europe",
+    "Eastern Europe": "europe",
+    "Southern Europe": "europe",
+    "Northern America": "namerica",
+    "Central America": "namerica",
+    "Caribbean": "namerica",
+    "South America": "samerica"
+  },
+  "country_overrides": {
+    "PNG": {
+      "group": "seasia"
+    },
+    "TLS": {
+      "group": "seasia"
+    }
+  },
+  "regions": [
+    {
+      "id": "idn-sumatra",
+      "label": "Sumatra",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Aceh",
+          "Sumatera Utara",
+          "Sumatera Barat",
+          "Riau",
+          "Kepulauan Riau",
+          "Jambi",
+          "Bengkulu",
+          "Sumatera Selatan",
+          "Bangka-Belitung",
+          "Lampung"
+        ]
+      }
+    },
+    {
+      "id": "idn-java",
+      "label": "Java",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Banten",
+          "Jakarta Raya",
+          "Jawa Barat",
+          "Jawa Tengah",
+          "Yogyakarta",
+          "Jawa Timur"
+        ]
+      }
+    },
+    {
+      "id": "idn-kalimantan",
+      "label": "Kalimantan",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Kalimantan Barat",
+          "Kalimantan Selatan",
+          "Kalimantan Tengah",
+          "Kalimantan Timur"
+        ]
+      }
+    },
+    {
+      "id": "idn-sulawesi",
+      "label": "Sulawesi",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Sulawesi Barat",
+          "Sulawesi Selatan",
+          "Sulawesi Tengah",
+          "Sulawesi Tenggara",
+          "Sulawesi Utara",
+          "Gorontalo"
+        ]
+      }
+    },
+    {
+      "id": "idn-nusa",
+      "label": "Bali & Nusa Tenggara",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Bali",
+          "Nusa Tenggara Barat",
+          "Nusa Tenggara Timur"
+        ]
+      }
+    },
+    {
+      "id": "idn-maluku",
+      "label": "Maluku",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Maluku",
+          "Maluku Utara"
+        ]
+      }
+    },
+    {
+      "id": "idn-papua",
+      "label": "Papua",
+      "parent": "idn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "IDN",
+        "field": "name",
+        "in": [
+          "Papua",
+          "Papua Barat"
+        ]
+      }
+    },
+    {
+      "id": "phl-luzon",
+      "label": "Luzon",
+      "parent": "phl",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "PHL",
+        "field": "region",
+        "in": [
+          "National Capital Region",
+          "Central Luzon (Region III)",
+          "Bicol (Region V)",
+          "Cordillera Administrative Region (CAR)",
+          "MIMAROPA (Region IV-B)",
+          "CALABARZON (Region IV-A)",
+          "Cagayan Valley (Region II)",
+          "Ilocos (Region I)"
+        ]
+      }
+    },
+    {
+      "id": "phl-visayas",
+      "label": "Visayas",
+      "parent": "phl",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "PHL",
+        "field": "region",
+        "in": [
+          "Eastern Visayas (Region VIII)",
+          "Western Visayas (Region VI)",
+          "Central Visayas (Region VII)"
+        ]
+      }
+    },
+    {
+      "id": "phl-mindanao",
+      "label": "Mindanao",
+      "parent": "phl",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "PHL",
+        "field": "region",
+        "in": [
+          "Northern Mindanao (Region X)",
+          "Autonomous Region in Muslim Mindanao (ARMM)",
+          "Davao (Region XI)",
+          "Dinagat Islands (Region XIII)",
+          "SOCCSKSARGEN (Region XII)",
+          "Zamboanga Peninsula (Region IX)"
+        ]
+      }
+    },
+    {
+      "id": "mys-peninsular",
+      "label": "Peninsular Malaysia",
+      "parent": "mys",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "MYS"
+        ],
+        "clip": {
+          "west": 99,
+          "east": 105,
+          "south": 0,
+          "north": 8
+        }
+      }
+    },
+    {
+      "id": "mys-borneo",
+      "label": "Sabah & Sarawak",
+      "parent": "mys",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "MYS"
+        ],
+        "clip": {
+          "west": 109,
+          "east": 120,
+          "south": 0,
+          "north": 8
+        }
+      }
+    },
+    {
+      "id": "vnm-north",
+      "label": "Northern Vietnam",
+      "parent": "vnm",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "VNM"
+        ],
+        "clip": {
+          "west": 100,
+          "east": 112,
+          "south": 18,
+          "north": 25
+        }
+      }
+    },
+    {
+      "id": "vnm-central",
+      "label": "Central Vietnam",
+      "parent": "vnm",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "VNM"
+        ],
+        "clip": {
+          "west": 100,
+          "east": 112,
+          "south": 11.5,
+          "north": 18
+        }
+      }
+    },
+    {
+      "id": "vnm-south",
+      "label": "Southern Vietnam",
+      "parent": "vnm",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "VNM"
+        ],
+        "clip": {
+          "west": 100,
+          "east": 112,
+          "south": 7,
+          "north": 11.5
+        }
+      }
+    },
+    {
+      "id": "tha-north",
+      "label": "Northern Thailand",
+      "parent": "tha",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "THA",
+        "field": "region",
+        "in": [
+          "Northern"
+        ]
+      }
+    },
+    {
+      "id": "tha-northeast",
+      "label": "Northeastern Thailand",
+      "parent": "tha",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "THA",
+        "field": "region",
+        "in": [
+          "Northeastern"
+        ]
+      }
+    },
+    {
+      "id": "tha-central",
+      "label": "Central Thailand",
+      "parent": "tha",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "THA",
+        "field": "region",
+        "in": [
+          "Central",
+          "Eastern",
+          "Western"
+        ]
+      }
+    },
+    {
+      "id": "tha-south",
+      "label": "Southern Thailand",
+      "parent": "tha",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "THA",
+        "field": "region",
+        "in": [
+          "Southern"
+        ]
+      }
+    },
+    {
+      "id": "chn-south-central",
+      "label": "South Central China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "South Central China"
+        ]
+      }
+    },
+    {
+      "id": "chn-east",
+      "label": "East China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "East China"
+        ]
+      }
+    },
+    {
+      "id": "chn-southwest",
+      "label": "Southwest China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "Southwest China"
+        ]
+      }
+    },
+    {
+      "id": "chn-north",
+      "label": "North China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "North China"
+        ]
+      }
+    },
+    {
+      "id": "chn-northeast",
+      "label": "Northeast China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "Northeast China"
+        ]
+      }
+    },
+    {
+      "id": "chn-northwest",
+      "label": "Northwest China",
+      "parent": "chn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "CHN",
+        "field": "region",
+        "in": [
+          "Northwest China"
+        ]
+      }
+    },
+    {
+      "id": "jpn-north",
+      "label": "Hokkaido & Tohoku",
+      "parent": "jpn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "JPN",
+        "field": "region",
+        "in": [
+          "Hokkaido",
+          "Tohoku"
+        ]
+      }
+    },
+    {
+      "id": "jpn-central",
+      "label": "Kanto & Chubu",
+      "parent": "jpn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "JPN",
+        "field": "region",
+        "in": [
+          "Kanto",
+          "Chubu"
+        ]
+      }
+    },
+    {
+      "id": "jpn-west",
+      "label": "Western Japan",
+      "parent": "jpn",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin1",
+        "adm0_a3": "JPN",
+        "field": "region",
+        "in": [
+          "Kinki",
+          "Chugoku",
+          "Shikoku",
+          "Kyushu",
+          "Okinawa"
+        ]
+      }
+    },
+    {
+      "id": "aus-north",
+      "label": "Northern Australia",
+      "parent": "aus",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "AUS"
+        ],
+        "clip": {
+          "west": 110,
+          "east": 156,
+          "south": -20,
+          "north": -9
+        }
+      }
+    },
+    {
+      "id": "aus-south",
+      "label": "Southern Australia",
+      "parent": "aus",
+      "kind": "subnational",
+      "geometry": {
+        "source": "ne_admin0",
+        "adm0_a3": [
+          "AUS"
+        ],
+        "clip": {
+          "west": 110,
+          "east": 156,
+          "south": -45,
+          "north": -20
+        }
+      }
+    },
+    {
+      "id": "box-mc",
+      "label": "Maritime Continent (10°S–10°N, 100–140°E)",
+      "group": "seasia",
+      "kind": "climate_box",
+      "geometry": {
+        "source": "box",
+        "west": 100,
+        "east": 140,
+        "south": -10,
+        "north": 10
+      }
+    },
+    {
+      "id": "box-wnp",
+      "label": "West North Pacific (10–20°N, 120–150°E)",
+      "group": "seasia",
+      "kind": "climate_box",
+      "geometry": {
+        "source": "box",
+        "west": 120,
+        "east": 150,
+        "south": 10,
+        "north": 20
+      }
+    },
+    {
+      "id": "box-scs",
+      "label": "South China Sea (5–20°N, 105–120°E)",
+      "group": "seasia",
+      "kind": "climate_box",
+      "geometry": {
+        "source": "box",
+        "west": 105,
+        "east": 120,
+        "south": 5,
+        "north": 20
+      }
+    }
+  ],
+  "country_skip": [
+    "BRI",
+    "BRT",
+    "CLP",
+    "CSI",
+    "ESB",
+    "GIB",
+    "PGA",
+    "SCR",
+    "UMI",
+    "USG",
+    "WSB"
+  ]
+}

@@ -1,0 +1,1 @@
+{"schema_version":1,"current":{"source":"ifs","issue":"20261007"},"sources":[{"id":"ifs","label":"IFS-initialised","issues":[{"id":"20261007","issue_date":"2026-10-07","members":100,"valid_through":"2026-11-17","has_climate":true,"manifest":"issues/ifs/20261007/issue.json","manifest_sha256":"484b5c9d6551463de7657c9c7d83857632a31ee562348d9f73f55cfc484ebe92"}]}]}
