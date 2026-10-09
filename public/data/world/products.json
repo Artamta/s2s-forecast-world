@@ -191,7 +191,7 @@
     {
       "id": "rain_anom",
       "variable": "rain",
-      "label": "Rainfall vs normal",
+      "label": "Rainfall anomaly",
       "short_label": "Rain anomaly",
       "description": "Ensemble-mean weekly rainfall minus the model's own normal for the same lead and time of year.",
       "kind": "field",
@@ -329,7 +329,7 @@
     {
       "id": "t2m_anom",
       "variable": "t2m",
-      "label": "Temperature vs normal",
+      "label": "Temperature anomaly",
       "short_label": "Temp anomaly",
       "description": "Ensemble-mean weekly 2 m temperature minus the model's own normal for the same lead and time of year.",
       "kind": "field",
@@ -447,7 +447,7 @@
     {
       "id": "olr_anom",
       "variable": "olr",
-      "label": "Convection vs normal",
+      "label": "Convection anomaly (OLR)",
       "short_label": "OLR anomaly",
       "description": "Outgoing longwave radiation minus the model normal. Negative values mean more deep cloud and usually more rain than normal; positive values mean clearer, drier conditions.",
       "kind": "field",
@@ -482,7 +482,7 @@
     {
       "id": "sst_anom",
       "variable": "sst",
-      "label": "Sea temperature vs normal",
+      "label": "Sea temperature anomaly",
       "short_label": "SST anomaly",
       "description": "Ensemble-mean sea-surface temperature minus the model normal for the same lead and time of year. Land is left blank.",
       "kind": "field",
@@ -517,7 +517,7 @@
     {
       "id": "wind850_anom",
       "variable": "wind",
-      "label": "Wind vs normal",
+      "label": "Wind anomaly",
       "short_label": "Wind anomaly",
       "description": "Ensemble-mean wind about 1.5 km above sea level minus the model normal. Shading is the size of the departure; arrows show its direction.",
       "kind": "wind",

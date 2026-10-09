@@ -32,6 +32,22 @@ To look at the page: build, then
 `python world/pipeline/serve_site.py --root dist --port 4173` and open
 `http://127.0.0.1:4173/world.html`.
 
+## Publishing
+
+The public copy is the repository `Artamta/s2s-forecast-world`, served by GitHub
+Pages at https://artamta.github.io/s2s-forecast-world/. To update it after a
+new export:
+
+```bash
+world/publish/export_repo.sh /home/raj.ayush/s2s/s2s-forecast-world   # copies files only
+cd /home/raj.ayush/s2s/s2s-forecast-world
+git add -A && git commit -m "Publish IFS issue YYYYMMDD" && git push   # the push deploys
+```
+
+Country shapes and borders come from Natural Earth's India-view edition
+(`admin0_countries` in `world/config/paths.json`); only lines India treats as
+international boundaries are drawn.
+
 ## Adding a region
 
 Add an entry to `world/config/regions.json` (a Natural Earth country code with
