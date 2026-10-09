@@ -14,6 +14,37 @@ export function loadJson<T>(url: string, fresh = false): Promise<T> {
   return jsonCache.get(url) as Promise<T>;
 }
 
+/** The preview build publishes each folder of per-id JSON files as one bundle. */
+const BUNDLED = document.getElementById("app")?.dataset.bundled === "true";
+const bundles = new Map<string, Promise<Record<string, unknown>>>();
+
+/** Load one JSON document from a folder of per-id files, or from that folder's bundle. */
+export async function loadMember<T>(folderUrl: string, id: string, version = ""): Promise<T> {
+  const suffix = version ? `?v=${encodeURIComponent(version)}` : "";
+  if (!BUNDLED) return loadJson<T>(`${folderUrl}${id}.json${suffix}`);
+  if (!bundles.has(folderUrl)) {
+    bundles.set(folderUrl, loadJson<Record<string, unknown>>(`${folderUrl}_bundle.json`));
+  }
+  const item = (await (bundles.get(folderUrl) as Promise<Record<string, unknown>>))[id];
+  if (item === undefined) throw new Error(`${folderUrl} has no ${id}`);
+  return item as T;
+}
+
+/** Load a binary file; the preview build ships each one as base64 text beside its name. */
+export async function loadBinary(url: string, version = ""): Promise<ArrayBuffer> {
+  const suffix = version ? `?v=${encodeURIComponent(version)}` : "";
+  if (!BUNDLED) {
+    const response = await fetch(`${url}${suffix}`, version ? undefined : { cache: "no-store" });
+    if (!response.ok) throw new Error(`${url}: ${response.status}`);
+    return response.arrayBuffer();
+  }
+  const { base64 } = await loadJson<{ base64: string }>(`${url}.json`);
+  const text = atob(base64);
+  const bytes = new Uint8Array(text.length);
+  for (let index = 0; index < text.length; index += 1) bytes[index] = text.charCodeAt(index);
+  return bytes.buffer;
+}
+
 async function fetchJson<T>(url: string, cache: RequestCache): Promise<T> {
   const response = await fetch(url, { cache });
   if (!response.ok) throw new Error(`${url}: ${response.status}`);
@@ -91,15 +122,13 @@ export class FieldData {
 const fieldCache = new Map<string, Promise<FieldData>>();
 
 export function loadField(issueBase: string, record: FieldRecord): Promise<FieldData> {
-  const url = `${issueBase}${record.path}?v=${record.sha256.slice(0, 12)}`;
+  const url = `${issueBase}${record.path}`;
   if (!fieldCache.has(url)) fieldCache.set(url, fetchField(url, record));
   return fieldCache.get(url) as Promise<FieldData>;
 }
 
 async function fetchField(url: string, record: FieldRecord): Promise<FieldData> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`${url}: ${response.status}`);
-  const buffer = await response.arrayBuffer();
+  const buffer = await loadBinary(url, record.sha256.slice(0, 12));
   if (buffer.byteLength !== record.bytes) throw new Error(`${record.path}: wrong size`);
   const digest = await sha256Hex(buffer);
   if (digest !== null && digest !== record.sha256) throw new Error(`${record.path}: checksum mismatch`);

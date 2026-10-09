@@ -10,5 +10,5 @@
 #SBATCH --array=0-103%20
 
 set -euo pipefail
-source "${WORLD_REPO:-/home/raj.ayush/s2s/fuxi-s2s-dashboard-dev}/world/slurm/env.sh"
+source "${WORLD_REPO:-/home/raj.ayush/s2s/s2s-forecast-world}/world/slurm/env.sh"
 "${PYTHON}" -u world/pipeline/build_hindcast_scores.py --task-index "${SLURM_ARRAY_TASK_ID}"

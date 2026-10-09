@@ -9,5 +9,5 @@
 #SBATCH --time=00:30:00
 
 set -euo pipefail
-source "${WORLD_REPO:-/home/raj.ayush/s2s/fuxi-s2s-dashboard-dev}/world/slurm/env.sh"
+source "${WORLD_REPO:-/home/raj.ayush/s2s/s2s-forecast-world}/world/slurm/env.sh"
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 "${PYTHON}" -m pytest -q -p no:cacheprovider "${@:-tests/world}"

@@ -44,6 +44,10 @@ export function tercileColor(outlook: Outlook, legend: TercileLegend): string {
 /** What a map shades: a pixel colour for any position, or null to leave it clear. */
 export interface Shader {
   rgbAt(week: number, latitude: number, longitude: number, smooth: boolean): Rgb | null;
+  /** The shaded quantity itself, for contour lines; absent where contours make no sense. */
+  valueAt?(week: number, latitude: number, longitude: number): number;
+  /** Values at which contour lines are drawn. */
+  levels?: number[];
 }
 
 class ColorTable {
@@ -61,6 +65,8 @@ class ColorTable {
 export function fieldShader(field: FieldData, layer: number, legend: BinLegend): Shader {
   const table = new ColorTable();
   return {
+    levels: legend.boundaries,
+    valueAt: (week, latitude, longitude) => field.sample(layer, week, latitude, longitude, true),
     rgbAt(week, latitude, longitude, smooth) {
       const value = field.sample(layer, week, latitude, longitude, smooth);
       return Number.isNaN(value) ? null : table.rgb(binColor(value, legend));
@@ -93,6 +99,9 @@ export function windSpeedShader(field: FieldData, legend: BinLegend): Shader {
   const table = new ColorTable();
   const [u, v] = [field.layerIndex("u"), field.layerIndex("v")];
   return {
+    levels: legend.boundaries.filter((level) => level > 0),
+    valueAt: (week, latitude, longitude) =>
+      Math.hypot(field.sample(u, week, latitude, longitude, true), field.sample(v, week, latitude, longitude, true)),
     rgbAt(week, latitude, longitude, smooth) {
       const speed = Math.hypot(
         field.sample(u, week, latitude, longitude, smooth),

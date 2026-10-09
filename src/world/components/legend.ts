@@ -19,10 +19,10 @@ function ticks(labels: Array<[string, number]>): HTMLElement {
 
 function binLegend(legend: BinLegend, units: string): HTMLElement {
   const colors = [legend.under, ...legend.colors, legend.over];
-  const labels = legend.boundaries.map((boundary, index): [string, number] => [
-    String(boundary).replace("-", "−"),
-    (index + 1) / colors.length,
-  ]);
+  const every = legend.boundaries.length > 11 ? 2 : 1;
+  const labels = legend.boundaries
+    .map((boundary, index): [string, number] => [String(boundary).replace("-", "−"), (index + 1) / colors.length])
+    .filter((_, index) => index % every === 0);
   return h(
     "div",
     { class: "wlegend" },

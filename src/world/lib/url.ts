@@ -1,5 +1,5 @@
-export type Route = "forecast" | "outlook" | "skill" | "drivers" | "about";
-export const ROUTES: Route[] = ["forecast", "outlook", "skill", "drivers", "about"];
+export type Route = "forecast" | "regions" | "briefing" | "about";
+export const ROUTES: Route[] = ["forecast", "regions", "briefing", "about"];
 
 export interface UrlState {
   route: Route;
@@ -39,5 +39,9 @@ export function writeUrl(values: Record<string, string | null>): void {
     else query.set(key, value);
   }
   const text = query.toString();
-  window.history.replaceState(null, "", `${window.location.pathname}${text ? `?${text}` : ""}${window.location.hash}`);
+  try {
+    window.history.replaceState(null, "", `${window.location.pathname}${text ? `?${text}` : ""}${window.location.hash}`);
+  } catch {
+    // Some embedded viewers refuse address changes; the page works without them.
+  }
 }

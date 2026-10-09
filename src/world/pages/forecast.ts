@@ -1,27 +1,27 @@
 import { createLegend } from "../components/legend";
-import { pointPanel } from "../components/pointPanel";
-import { regionPanel } from "../components/regionPanel";
-import { regionPicker } from "../components/regionPicker";
-import { availableProducts, countryAt, landShare, legendFor, seasonOf, SKILL_ROOT, type App, type Issue } from "../lib/app";
-import { loadField, loadJson, type FieldData } from "../lib/data";
+import { areaButtons, regionList, section, segmented, switchRow } from "../components/sidebar";
+import { weekBar } from "../components/weekBar";
+import { areaOf, countryAt, landShare, legendFor, menuProducts, type App, type Issue } from "../lib/app";
+import { loadField, type FieldData } from "../lib/data";
 import { clear, h } from "../lib/dom";
 import { digitsFor, formatLatitude, formatLongitude, formatNumber, formatRange } from "../lib/format";
 import { writeUrl, type UrlState } from "../lib/url";
 import { RegionMap, type MapPoint } from "../map/RegionMap";
 import { fieldShader, tercileShader, windSpeedShader, type Shader } from "../map/shading";
-import type { BinLegend, Product, RegionDocument, RegionInfo, RegionSkillDocument, TercileLegend } from "../types";
+import type { BinLegend, MapView, MenuVariable, Product, RegionInfo, TercileLegend } from "../types";
 
 const DRIFT_LIMIT = 0.3;
+const PLAY_INTERVAL_MS = 1400;
 
 interface State {
   region: RegionInfo;
   product: Product;
   week: number;
   cells: boolean;
-  wind: boolean;
-  hatch: boolean;
+  arrows: boolean;
+  contours: boolean;
   fadeSea: boolean;
-  point: MapPoint | null;
+  pinned: MapPoint | null;
 }
 
 interface Loaded {
@@ -55,48 +55,51 @@ function describeValue(loaded: Loaded, legend: BinLegend | TercileLegend, week: 
   return Number.isNaN(value) ? "No value" : `${formatNumber(value, digitsFor(product.units))} ${product.units}`;
 }
 
-/** The forecast page: pick a region and a map, step through six weeks, read the side panel. */
+function placeText(point: MapPoint): string {
+  return `${formatLatitude(Math.round(point.latitude * 10) / 10)}, ${formatLongitude(Math.round(point.longitude * 10) / 10)}`;
+}
+
+/** The forecast page: controls on the side, one large map, six weeks to step or play through. */
 export function renderForecast(root: HTMLElement, app: App, issue: Issue, url: UrlState): () => void {
-  const products = availableProducts(app, issue.manifest);
+  const products = menuProducts(app, issue.manifest);
   const state: State = {
     region: app.regionById.get(url.region ?? "") ?? (app.regionById.get(app.regions.default_region) as RegionInfo),
     product: products.find((product) => product.id === url.product) ?? products[0],
     week: (url.week ?? 1) - 1,
     cells: url.cells,
-    wind: false,
-    hatch: true,
+    arrows: false,
+    contours: true,
     fadeSea: true,
-    point: url.point,
+    pinned: url.point,
   };
   let loaded: Loaded | null = null;
   let windField: FieldData | null = null;
-  let pastSkill: FieldData | null = null;
+  let hovered: string | null = null;
+  let playTimer = 0;
   let disposed = false;
 
-  const controls = h("div", { class: "wcontrols" });
+  const sidebar = h("aside", { class: "wsb", "aria-label": "Map controls" });
+  const title = h("div", { class: "wstage__title" });
   const mapHost = h("div", { class: "wmap" });
   const tooltip = h("div", { class: "wmap__tooltip", hidden: true });
-  const caption = h("div", { class: "wmap__caption" });
-  const weeks = h("div", { class: "wweeks", role: "group", "aria-label": "Forecast week" });
-  const note = h("p", { class: "wnote" });
-  const pointHost = h("div");
-  const regionHost = h("div");
+  const card = h("div", { class: "wmap__card", hidden: true });
   const zoomButtons = h("div", { class: "wmap__zoom" });
-  mapHost.append(tooltip, zoomButtons);
+  const foot = h("div", { class: "wstage__foot" });
+  const weeks = weekBar(issue.manifest.weeks, (week) => setWeek(week), () => togglePlay());
+  mapHost.append(tooltip, card, zoomButtons);
   root.append(
-    controls,
     h(
       "div",
-      { class: "wlayout" },
-      h("div", { class: "wmain" }, weeks, mapHost, caption, note),
-      h("aside", { class: "wside" }, pointHost, regionHost),
+      { class: "wfc" },
+      sidebar,
+      h("section", { class: "wstage" }, h("div", { class: "wstage__head" }, title, weeks.element), mapHost, foot),
     ),
   );
 
   const map = new RegionMap(mapHost, app.geography, {
     interactive: true,
-    onHover: (point, x, y) => showTooltip(point, x, y),
-    onSelect: (point) => setPoint(point),
+    onHover: (point, x, y) => void showTooltip(point, x, y),
+    onSelect: (point) => setPinned(point),
   });
   for (const [label, name, action] of [
     ["+", "Zoom in", () => map.zoom(1.5)],
@@ -107,20 +110,10 @@ export function renderForecast(root: HTMLElement, app: App, issue: Issue, url: U
     button.addEventListener("click", action);
     zoomButtons.append(button);
   }
-  const weekButtons = issue.manifest.weeks.map((window, index) => {
-    const button = h(
-      "button",
-      { type: "button" },
-      h("strong", {}, `Week ${window.week}`),
-      h("span", {}, formatRange(window.valid_start, window.valid_end)),
-    );
-    button.addEventListener("click", () => setWeek(index));
-    weeks.append(button);
-    return button;
-  });
 
-  const fadesSea = (): boolean => state.fadeSea && (state.product.variable === "rain" || state.product.variable === "t2m");
-  const showsHatch = (): boolean => app.skill !== null && state.product.kind === "tercile";
+  const variable = (): MenuVariable => state.product.variable as MenuVariable;
+  const fadesSea = (): boolean => state.fadeSea && variable() !== "wind";
+  const hasContours = (): boolean => state.product.kind !== "tercile";
 
   function syncUrl(): void {
     writeUrl({
@@ -128,83 +121,87 @@ export function renderForecast(root: HTMLElement, app: App, issue: Issue, url: U
       product: state.product.id,
       week: String(state.week + 1),
       cells: state.cells ? "1" : null,
-      point: state.point ? `${state.point.latitude.toFixed(2)},${state.point.longitude.toFixed(2)}` : null,
+      point: state.pinned ? `${state.pinned.latitude.toFixed(2)},${state.pinned.longitude.toFixed(2)}` : null,
     });
   }
 
-  function showTooltip(point: MapPoint | null, x: number, y: number): void {
+  /** Outline the country under the pointer, unless it is already the selected region. */
+  async function highlight(countryId: string | null): Promise<void> {
+    if (countryId === hovered) return;
+    hovered = countryId;
+    const lines = countryId && countryId !== state.region.id ? await app.geography.outline(countryId) : [];
+    if (!disposed && hovered === countryId) map.update({ highlight: lines });
+  }
+
+  async function showTooltip(point: MapPoint | null, x: number, y: number): Promise<void> {
     if (!point || !loaded) {
       tooltip.hidden = true;
+      if (!state.pinned) await highlight(null);
       return;
     }
     const country = countryAt(app, point.latitude, point.longitude);
-    const place = `${formatLatitude(Math.round(point.latitude * 10) / 10)}, ${formatLongitude(Math.round(point.longitude * 10) / 10)}`;
     tooltip.replaceChildren(
-      h("strong", {}, describeValue(loaded, legendFor(app, loaded.product), state.week, point)),
-      h("span", {}, country ? `${country.label} · ${place}` : place),
+      h("strong", {}, country ? country.label : "Open sea"),
+      h("span", {}, describeValue(loaded, legendFor(app, loaded.product), state.week, point)),
     );
     tooltip.hidden = false;
     tooltip.style.left = `${x}px`;
     tooltip.style.top = `${y}px`;
     tooltip.classList.toggle("wmap__tooltip--left", x > mapHost.clientWidth * 0.6);
+    if (!state.pinned) await highlight(country?.id ?? null);
   }
 
-  function productSelect(): HTMLElement {
-    const select = h("select", { "aria-label": "Map" });
-    for (const group of [...new Set(products.map((product) => product.group))]) {
-      const options = products
-        .filter((product) => product.group === group)
-        .map((product) => h("option", { value: product.id, selected: product.id === state.product.id }, product.label));
-      select.append(h("optgroup", { label: group }, ...options));
-    }
-    select.addEventListener("change", () => {
-      state.product = products.find((product) => product.id === select.value) ?? products[0];
-      renderControls();
+  /** The pinned place: its name, value and a way to open that country. */
+  function renderCard(): void {
+    const point = state.pinned;
+    card.hidden = !point || !loaded;
+    if (!point || !loaded) return;
+    const country = countryAt(app, point.latitude, point.longitude);
+    const close = h("button", { type: "button", class: "wmap__card-close", "aria-label": "Clear selected place" }, "×");
+    close.addEventListener("click", () => setPinned(null));
+    const open = country && country.id !== state.region.id ? h("button", { type: "button", class: "wbutton" }, `Open ${country.label}`) : null;
+    if (country && open) open.addEventListener("click", () => void setRegion(country.id));
+    card.replaceChildren(
+      close,
+      h("strong", {}, country ? country.label : "Open sea"),
+      h("span", { class: "wmap__card-place" }, placeText(point)),
+      h("span", {}, describeValue(loaded, legendFor(app, loaded.product), state.week, point)),
+      open ?? "",
+    );
+  }
+
+  function renderSidebar(): void {
+    const area = areaOf(app, state.region);
+    const views = products
+      .filter((product) => product.variable === variable())
+      .map((product) => ({ id: product.view as MapView, label: product.view_label ?? product.label }));
+    const pick = (wanted: MenuVariable, view: MapView): void => {
+      const ofVariable = products.filter((product) => product.variable === wanted);
+      state.product = ofVariable.find((product) => product.view === view) ?? ofVariable[0];
+      renderSidebar();
       void refreshProduct();
-    });
-    return h("label", {}, h("span", {}, "Map"), select);
-  }
-
-  function optionsMenu(): HTMLElement {
-    const toggle = (label: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement => {
-      const input = h("input", { type: "checkbox", checked });
-      input.addEventListener("change", () => onChange(input.checked));
-      return h("label", { class: "wtoggle" }, input, h("span", {}, label));
     };
-    const menu = h("div", { class: "wopts__menu" });
-    if (state.product.variable === "rain" || state.product.variable === "t2m") {
-      menu.append(toggle("Fade the sea", state.fadeSea, (value) => { state.fadeSea = value; paint(); }));
+    const display = h("div", { class: "wsb__switches" });
+    if (hasContours()) display.append(switchRow("show-contours", "Contour lines", state.contours, (value) => { state.contours = value; paint(); }));
+    if (variable() !== "wind" && "wind850" in issue.manifest.fields) {
+      display.append(switchRow("show-arrows", "Wind arrows", state.arrows, (value) => { state.arrows = value; void refreshWind(); }));
     }
-    if (showsHatch()) {
-      menu.append(toggle("Hatch where past forecasts had no skill", state.hatch, (value) => { state.hatch = value; paint(); }));
-    }
-    if ("wind850" in issue.manifest.fields && state.product.kind !== "wind") {
-      menu.append(toggle("Wind arrows", state.wind, (value) => { state.wind = value; void refreshWind(); }));
-    }
-    menu.append(toggle("Show model grid cells", state.cells, (value) => { state.cells = value; paint(); }));
-    return h("details", { class: "wopts" }, h("summary", {}, "Options"), menu);
-  }
-
-  function renderControls(): void {
-    clear(controls);
-    controls.append(regionPicker(app, state.region, (regionId) => void setRegion(regionId)), productSelect(), optionsMenu());
-  }
-
-  /** True where smoothed hindcast BSS for this lead week and season is not above zero. */
-  function noSkillMask(): ((latitude: number, longitude: number) => boolean) | null {
-    const field = pastSkill;
-    if (!field || !state.hatch || !showsHatch()) return null;
-    const season = field.layerIndex(seasonOf(issue.manifest.weeks[state.week].valid_start));
-    const landOnly = fadesSea();
-    return (latitude, longitude) =>
-      field.sample(season, state.week, latitude, longitude, false) <= 0 &&
-      (!landOnly || landShare(app, latitude, longitude) > 0.5);
+    if (variable() !== "wind") display.append(switchRow("fade-sea", "Fade the sea", state.fadeSea, (value) => { state.fadeSea = value; paint(); }));
+    display.append(switchRow("show-cells", "Model grid cells", state.cells, (value) => { state.cells = value; paint(); }));
+    clear(sidebar);
+    sidebar.append(
+      section("Area", areaButtons(app, area.id, (areaId) => void setRegion(areaId))),
+      section("Region", regionList(app, state.region, (regionId) => void setRegion(regionId))),
+      section("Variable", segmented("Variable", app.products.variables.filter((item) => products.some((product) => product.variable === item.id)), variable(), (id) => pick(id, state.product.view as MapView))),
+      section("Map", segmented("Map", views, state.product.view as MapView, (view) => pick(variable(), view))),
+      section("Display", display),
+    );
   }
 
   /** Flag weeks where the whole globe has slid away from the model normal. */
   function driftWarning(): string {
     const departure = issue.manifest.climate?.mean_departure_60s_60n?.t2m;
-    const usesNormal = state.product.variable === "t2m" && state.product.id !== "t2m_mean";
+    const usesNormal = state.product.variable === "t2m" && state.product.view !== "total";
     if (!departure || !usesNormal) return "";
     const slide = departure[state.week] - departure[0];
     if (Math.abs(slide) < DRIFT_LIMIT) return "";
@@ -213,114 +210,99 @@ export function renderForecast(root: HTMLElement, app: App, issue: Issue, url: U
 
   function paint(): void {
     if (!loaded) return;
-    const showWind = state.wind || state.product.kind === "wind";
-    const arrows = state.product.kind === "wind" ? loaded.field : windField;
-    const mask = noSkillMask();
+    const showArrows = state.product.kind === "wind" || state.arrows;
     map.update({
       shader: loaded.shader,
       week: state.week,
       smooth: !state.cells,
-      wind: showWind ? arrows : null,
-      selection: state.point,
-      mask,
+      wind: showArrows ? (state.product.kind === "wind" ? loaded.field : windField) : null,
+      selection: state.pinned,
+      contours: state.contours && hasContours(),
       land: fadesSea() ? (latitude, longitude) => landShare(app, latitude, longitude) : null,
     });
-    weekButtons.forEach((button, index) => {
-      button.classList.toggle("is-selected", index === state.week);
-      button.setAttribute("aria-pressed", String(index === state.week));
-    });
-    clear(caption);
-    caption.append(
-      createLegend(state.product, legendFor(app, state.product)),
-      h("p", { class: "wmap__keys" },
-        state.product.kind === "tercile" ? "Grey: near normal or no clear lean." : "",
-        mask ? " Hatched: past forecasts were no better than climatology there." : ""),
+    weeks.setWeek(state.week);
+    const window = issue.manifest.weeks[state.week];
+    title.replaceChildren(
+      h("h2", {}, state.product.label),
+      h("p", {}, `Week ${window.week} · ${formatRange(window.valid_start, window.valid_end)} · ${state.region.label}`),
     );
-    note.textContent = `${state.product.description}${driftWarning()}`;
+    clear(foot);
+    foot.append(
+      createLegend(state.product, legendFor(app, state.product)),
+      h("p", { class: "wnote" },
+        state.product.kind === "tercile" ? "Grey: near normal or no clear lean. " : "",
+        `${state.product.description}${driftWarning()}`),
+    );
+    renderCard();
     syncUrl();
   }
 
   async function refreshWind(): Promise<void> {
     const record = issue.manifest.fields.wind850;
-    if (record && state.wind && !windField) windField = await loadField(issue.base, record);
+    if (record && state.arrows && !windField) windField = await loadField(issue.base, record);
     if (!disposed) paint();
   }
 
   async function refreshProduct(): Promise<void> {
     const product = state.product;
     const field = await loadField(issue.base, issue.manifest.fields[product.field]);
-    const skillRecord = product.kind === "tercile" ? app.skill?.fields[`bss3_${product.variable}_era5`] : undefined;
-    const skillField = skillRecord ? await loadField(SKILL_ROOT, skillRecord) : null;
     if (disposed || product !== state.product) return;
-    pastSkill = skillField;
     loaded = { product, field, shader: buildShader(app, product, field) };
     await refreshWind();
   }
 
-  async function refreshRegionPanel(): Promise<void> {
-    const region = state.region;
-    const version = encodeURIComponent(issue.manifest.generated_at);
-    const [document, skill] = await Promise.all([
-      loadJson<RegionDocument>(`${issue.base}regions/${region.id}.json?v=${version}`),
-      app.skill
-        ? loadJson<RegionSkillDocument>(`${SKILL_ROOT}regions/${region.id}.json?v=${encodeURIComponent(app.skill.generated_at)}`).catch(() => null)
-        : null,
-    ]);
-    if (disposed || region !== state.region) return;
-    const open = regionHost.querySelector("details")?.open ?? false;
-    clear(regionHost);
-    regionHost.append(
-      regionPanel({ app, issue, region, document, skill, week: state.week, onRegion: (id) => void setRegion(id), onWeek: setWeek }),
-    );
-    const details = regionHost.querySelector("details");
-    if (details) details.open = open;
+  function stopPlay(): void {
+    window.clearInterval(playTimer);
+    playTimer = 0;
+    weeks.setPlaying(false);
   }
 
-  async function refreshPointPanel(): Promise<void> {
-    const point = state.point;
-    if (!point) {
-      clear(pointHost);
+  function togglePlay(): void {
+    if (playTimer) {
+      stopPlay();
       return;
     }
-    const panel = await pointPanel({
-      app, issue, point, week: state.week, onWeek: setWeek,
-      onRegion: (id) => void setRegion(id),
-      onClose: () => setPoint(null),
-    });
-    if (!disposed && point === state.point) pointHost.replaceChildren(panel);
+    weeks.setPlaying(true);
+    playTimer = window.setInterval(() => {
+      state.week = (state.week + 1) % issue.manifest.weeks.length;
+      paint();
+    }, PLAY_INTERVAL_MS);
   }
 
   function setWeek(week: number): void {
+    stopPlay();
     state.week = week;
     paint();
-    void refreshRegionPanel();
-    void refreshPointPanel();
   }
 
-  function setPoint(point: MapPoint | null): void {
-    state.point = point;
+  function setPinned(point: MapPoint | null): void {
+    state.pinned = point;
+    const country = point ? countryAt(app, point.latitude, point.longitude) : null;
+    void highlight(country?.id ?? null);
     paint();
-    void refreshPointPanel();
   }
 
   async function setRegion(regionId: string): Promise<void> {
     state.region = app.regionById.get(regionId) ?? state.region;
-    renderControls();
+    state.pinned = null;
+    hovered = null;
+    renderSidebar();
     map.setView(state.region.view);
     const outline = state.region.kind === "group" ? [] : await app.geography.outline(state.region.id);
     if (disposed) return;
-    map.update({ outline });
+    map.update({ outline, highlight: [] });
     paint();
-    await refreshRegionPanel();
   }
 
   root.dataset.ready = "false";
-  void Promise.all([refreshProduct(), setRegion(state.region.id), refreshPointPanel()]).then(() => {
+  void Promise.all([refreshProduct(), setRegion(state.region.id)]).then(() => {
+    if (url.point) setPinned(url.point);
     root.dataset.ready = "true";
   });
 
   return () => {
     disposed = true;
+    stopPlay();
     map.destroy();
   };
 }

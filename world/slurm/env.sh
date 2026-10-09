@@ -1,5 +1,5 @@
 # Shared settings for the world pipeline jobs. Sourced by every sbatch script.
-WORLD_REPO=${WORLD_REPO:-/home/raj.ayush/s2s/fuxi-s2s-dashboard-dev}
+WORLD_REPO=${WORLD_REPO:-/home/raj.ayush/s2s/s2s-forecast-world}
 WORLD_ROOT=/storage/raj.ayush/s2s_final_data/final_iteration/world_dashboard_v1
 PYTHON=/home/raj.ayush/.conda/envs/s2s-hind/bin/python
 TASK_CACHE=/tmp/world_${SLURM_JOB_ID:-local}_${SLURM_ARRAY_TASK_ID:-0}

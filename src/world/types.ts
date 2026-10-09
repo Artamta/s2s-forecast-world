@@ -79,21 +79,6 @@ export interface IssueManifest {
   registry_hash: string;
 }
 
-export interface DriverIndex {
-  id: string;
-  label: string;
-  units: string;
-  description: string;
-  plume: Plume;
-  weekly: number[];
-}
-
-export interface DriversDocument {
-  first_day: string;
-  indices: DriverIndex[];
-  hovmoller: { label: string; units: string; band: [number, number]; longitude: number[]; values: number[][] };
-}
-
 export interface CatalogIssue {
   id: string;
   issue_date: string;
@@ -132,6 +117,8 @@ export interface TercileLegend {
 }
 
 export type Variable = "rain" | "t2m";
+export type MenuVariable = Variable | "wind";
+export type MapView = "outlook" | "anomaly" | "total";
 
 interface ProductBase {
   id: string;
@@ -142,6 +129,9 @@ interface ProductBase {
   group: string;
   field: string;
   units: string;
+  /** Present on the maps offered in the menu: which kind of map this is for its variable. */
+  view?: MapView;
+  view_label?: string;
 }
 
 export interface FieldProduct extends ProductBase {
@@ -163,46 +153,11 @@ export interface WindProduct extends ProductBase {
 
 export type Product = FieldProduct | TercileProduct | WindProduct;
 
-export interface SkillMetric {
-  id: string;
-  label: string;
-  short_label: string;
-  description: string;
-}
-
 export interface ProductsDocument {
   schema_version: number;
   dry_week_threshold_mm: number;
+  variables: Array<{ id: MenuVariable; label: string }>;
   products: Product[];
-  skill: {
-    metrics: SkillMetric[];
-    legends: { score: BinLegend; acc: BinLegend };
-    truths: Record<string, string>;
-    seasons: Record<string, string>;
-  };
-}
-
-export interface SkillDocument {
-  schema_version: number;
-  generated_at: string;
-  registry_hash: string;
-  evaluation_years: [number, number];
-  climate_years: [number, number];
-  hindcast_members: number;
-  initialisation: string;
-  seasons: string[];
-  cases_per_week: Record<string, number>;
-  pairs: string[];
-  metrics: string[];
-  reference: string;
-  fields: Record<string, FieldRecord>;
-}
-
-export type RegionScores = Record<string, Array<number | null>>;
-
-export interface RegionSkillDocument {
-  id: string;
-  pairs: Record<string, Record<string, RegionScores>>;
 }
 
 export interface TercileChance {

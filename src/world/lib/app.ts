@@ -8,13 +8,12 @@ import type {
   ProductsDocument,
   RegionInfo,
   RegionsDocument,
-  SkillDocument,
   SummaryDocument,
   TercileLegend,
   TercileProduct,
   Variable,
 } from "../types";
-import { DATA_ROOT, GRID_COLS, GRID_ROWS, gridCell, loadJson } from "./data";
+import { DATA_ROOT, GRID_COLS, GRID_ROWS, gridCell, loadBinary, loadJson } from "./data";
 
 const NO_COUNTRY = 65535;
 const LAND_FULL_PERCENT = 15;
@@ -29,17 +28,6 @@ export interface App {
   cellCountry: Uint16Array;
   /** 1 where a grid cell holds a fair share of land, falling to 0 over open sea. */
   land: Float32Array;
-  skill: SkillDocument | null;
-}
-
-export const SKILL_ROOT = `${DATA_ROOT}skill/`;
-
-/** Season of a start date, as the skill files name it. */
-export function seasonOf(isoDay: string): string {
-  const month = Number(isoDay.slice(5, 7));
-  if (month === 12 || month <= 2) return "djf";
-  if (month <= 5) return "mam";
-  return month <= 8 ? "jja" : "son";
 }
 
 export interface Issue {
@@ -50,22 +38,20 @@ export interface Issue {
 
 export async function loadApp(): Promise<App> {
   const geography = new Geography();
-  const [catalog, regions, products, countryBuffer, landBuffer, skill] = await Promise.all([
+  const [catalog, regions, products, countryBuffer, landBuffer] = await Promise.all([
     loadJson<Catalog>(`${DATA_ROOT}catalog.json`, true),
     loadJson<RegionsDocument>(`${DATA_ROOT}regions.json`, true),
     loadJson<ProductsDocument>(`${DATA_ROOT}products.json`, true),
-    fetch(`${DATA_ROOT}cell-country.bin`, { cache: "no-store" }).then((response) => response.arrayBuffer()),
-    fetch(`${DATA_ROOT}land-fraction.bin`, { cache: "no-store" }).then((response) => response.arrayBuffer()),
-    loadJson<SkillDocument>(`${SKILL_ROOT}skill.json`, true).catch(() => null),
+    loadBinary(`${DATA_ROOT}cell-country.bin`),
+    loadBinary(`${DATA_ROOT}land-fraction.bin`),
     geography.load(),
   ]);
   const cellCountry = new Uint16Array(countryBuffer);
   if (cellCountry.length !== GRID_ROWS * GRID_COLS) throw new Error("cell-country.bin has an unexpected size");
-  const regionById = new Map(regions.regions.map((region) => [region.id, region]));
-  const usable = skill && skill.registry_hash === regions.registry_hash ? skill : null;
   const land = Float32Array.from(new Uint8Array(landBuffer), (percent) => Math.min(1, percent / LAND_FULL_PERCENT));
   if (land.length !== GRID_ROWS * GRID_COLS) throw new Error("land-fraction.bin has an unexpected size");
-  return { catalog, regions, regionById, products, geography, cellCountry, land, skill: usable };
+  const regionById = new Map(regions.regions.map((region) => [region.id, region]));
+  return { catalog, regions, regionById, products, geography, cellCountry, land };
 }
 
 export function findIssue(catalog: Catalog, source: string | null, issue: string | null): { source: string; entry: CatalogIssue } {
@@ -83,9 +69,9 @@ export async function loadIssue(entry: CatalogIssue): Promise<Issue> {
   return { manifest, base, summary };
 }
 
-/** Products whose field this issue carries, in catalogue order. */
-export function availableProducts(app: App, manifest: IssueManifest): Product[] {
-  return app.products.products.filter((product) => product.field in manifest.fields);
+/** Maps offered in the menu whose field this issue carries, in catalogue order. */
+export function menuProducts(app: App, manifest: IssueManifest): Product[] {
+  return app.products.products.filter((product) => product.view !== undefined && product.field in manifest.fields);
 }
 
 export function legendFor(app: App, product: Product): BinLegend | TercileLegend {
@@ -125,15 +111,9 @@ export function landShare(app: App, latitude: number, longitude: number): number
   return (at(row0, col0) * (1 - fx) + at(row0, col1) * fx) * (1 - fy) + (at(row1, col0) * (1 - fx) + at(row1, col1) * fx) * fy;
 }
 
-/** A region's ancestors from the world down to its parent. */
-export function ancestors(app: App, region: RegionInfo): RegionInfo[] {
-  const chain: RegionInfo[] = [];
-  let parent = region.parent ? app.regionById.get(region.parent) : undefined;
-  while (parent) {
-    chain.unshift(parent);
-    parent = parent.parent ? app.regionById.get(parent.parent) : undefined;
-  }
-  return chain;
+/** The area (top-level group) a region belongs to. */
+export function areaOf(app: App, region: RegionInfo): RegionInfo {
+  return region.kind === "group" ? region : (app.regionById.get(region.group) as RegionInfo);
 }
 
 export function tierNote(region: RegionInfo): string | null {

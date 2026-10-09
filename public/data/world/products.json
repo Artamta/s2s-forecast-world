@@ -166,27 +166,29 @@
           70
         ],
         "below": [
-          "#e8b872",
-          "#d39a45",
-          "#a8691c"
+          "#cc9570",
+          "#bf7c4d",
+          "#b15f26"
         ],
         "above": [
-          "#86bde3",
-          "#4f9dce",
-          "#1f6fa5"
+          "#67a1b4",
+          "#428aa2",
+          "#18708e"
         ],
-        "near": "#eef0f2",
-        "none": "#eef0f2",
+        "near": "#e6e9ec",
+        "none": "#e6e9ec",
         "below_label": "Drier",
         "above_label": "Wetter",
         "near_label": "Near normal",
         "bar": {
-          "below": "#d39a45",
-          "near": "#b9c0c7",
-          "above": "#4f9dce"
+          "below": "#b15f26",
+          "near": "#aab2ba",
+          "above": "#18708e"
         }
       },
-      "group": "Rainfall"
+      "group": "Rainfall",
+      "view": "outlook",
+      "view_label": "Outlook"
     },
     {
       "id": "rain_anom",
@@ -210,18 +212,20 @@
           100
         ],
         "colors": [
-          "#a8691c",
-          "#d39a45",
-          "#e8b872",
-          "#eef0f2",
-          "#86bde3",
-          "#4f9dce",
-          "#1f6fa5"
+          "#ff5200",
+          "#ff8e1d",
+          "#ffca59",
+          "#f4f4f1",
+          "#c8c8e9",
+          "#8c8cbf",
+          "#6464a3"
         ],
-        "under": "#7a4a10",
-        "over": "#154f78"
+        "under": "#d70e00",
+        "over": "#3c3c87"
       },
-      "group": "Rainfall"
+      "group": "Rainfall",
+      "view": "anomaly",
+      "view_label": "Anomaly"
     },
     {
       "id": "rain_mean",
@@ -240,27 +244,25 @@
           10,
           25,
           50,
-          75,
           100,
-          150,
           200,
           300
         ],
         "colors": [
-          "#e4f0f8",
-          "#c9e1f1",
-          "#a9d0ea",
-          "#86bde3",
-          "#69abd8",
-          "#4f9dce",
-          "#3686bb",
-          "#1f6fa5",
-          "#154f78"
+          "#e9f9e6",
+          "#b7ffb8",
+          "#71f27b",
+          "#24d13b",
+          "#009a18",
+          "#006b12",
+          "#003d0c"
         ],
-        "under": "#eef0f2",
-        "over": "#0e3857"
+        "under": "#f7f9fa",
+        "over": "#002807"
       },
-      "group": "Rainfall"
+      "group": "Rainfall",
+      "view": "total",
+      "view_label": "Total"
     },
     {
       "id": "rain_p10",
@@ -304,27 +306,29 @@
           70
         ],
         "below": [
-          "#86bde3",
-          "#4f9dce",
-          "#1f6fa5"
+          "#80a3c8",
+          "#5585b6",
+          "#2b66a4"
         ],
         "above": [
-          "#f0a08a",
-          "#e07a5f",
-          "#b9442b"
+          "#da8f82",
+          "#ce6958",
+          "#c2442e"
         ],
-        "near": "#eef0f2",
-        "none": "#eef0f2",
+        "near": "#e6e9ec",
+        "none": "#e6e9ec",
         "below_label": "Cooler",
         "above_label": "Warmer",
         "near_label": "Near normal",
         "bar": {
-          "below": "#4f9dce",
-          "near": "#b9c0c7",
-          "above": "#e07a5f"
+          "below": "#2b66a4",
+          "near": "#aab2ba",
+          "above": "#c2442e"
         }
       },
-      "group": "Temperature"
+      "group": "Temperature",
+      "view": "outlook",
+      "view_label": "Outlook"
     },
     {
       "id": "t2m_anom",
@@ -339,36 +343,44 @@
       "legend": {
         "boundaries": [
           -6,
+          -5,
           -4,
+          -3,
           -2,
           -1,
-          -0.5,
-          0.5,
+          0,
           1,
           2,
+          3,
           4,
+          5,
           6
         ],
         "colors": [
-          "#1f6fa5",
-          "#4f9dce",
-          "#86bde3",
-          "#c3ddf0",
-          "#eef0f2",
-          "#f8cfc2",
-          "#f0a08a",
-          "#e07a5f",
-          "#b9442b"
+          "#383880",
+          "#5a5a9c",
+          "#8282b8",
+          "#aaaad4",
+          "#c8c8e9",
+          "#dcdcf7",
+          "#fffacd",
+          "#ffa635",
+          "#ff7605",
+          "#ff5e00",
+          "#ff2e00",
+          "#c30400"
         ],
-        "under": "#154f78",
-        "over": "#8a2c1a"
+        "under": "#10103a",
+        "over": "#730000"
       },
-      "group": "Temperature"
+      "group": "Temperature",
+      "view": "anomaly",
+      "view_label": "Anomaly"
     },
     {
       "id": "t2m_mean",
       "variable": "t2m",
-      "label": "Temperature",
+      "label": "Mean temperature",
       "short_label": "Temperature",
       "description": "Ensemble-mean 2 m temperature averaged over the forecast week.",
       "kind": "field",
@@ -383,37 +395,47 @@
           0,
           5,
           10,
-          15,
-          20,
+          14,
+          18,
+          22,
           24,
-          27,
+          26,
+          28,
           30,
-          33,
-          36
+          32,
+          34,
+          36,
+          38
         ],
         "colors": [
-          "#154f78",
-          "#1f6fa5",
-          "#4f9dce",
-          "#86bde3",
-          "#c3ddf0",
-          "#e4eef5",
-          "#eef0f2",
-          "#f8cfc2",
-          "#f0a08a",
-          "#e07a5f",
-          "#c95a3f",
-          "#b9442b"
+          "#383880",
+          "#5a5a9c",
+          "#8282b8",
+          "#aaaad4",
+          "#c8c8e9",
+          "#dcdcf7",
+          "#fffacd",
+          "#fff191",
+          "#ffe271",
+          "#ffca59",
+          "#ffa635",
+          "#ff8e1d",
+          "#ff6a00",
+          "#ff3a00",
+          "#eb1800",
+          "#c30400"
         ],
-        "under": "#0e3857",
-        "over": "#8a2c1a"
+        "under": "#10103a",
+        "over": "#9b0000"
       },
-      "group": "Temperature"
+      "group": "Temperature",
+      "view": "total",
+      "view_label": "Mean"
     },
     {
       "id": "wind850",
       "variable": "wind",
-      "label": "Wind at 1.5 km",
+      "label": "850 hPa wind",
       "short_label": "Wind 850",
       "description": "Ensemble-mean wind about 1.5 km above sea level, averaged over the forecast week. Shading is speed; arrows show direction.",
       "kind": "wind",
@@ -422,27 +444,29 @@
       "legend": {
         "boundaries": [
           0,
-          2,
-          4,
+          3,
           6,
-          8,
-          10,
-          14,
-          18
+          9,
+          12,
+          18,
+          25,
+          35
         ],
         "colors": [
-          "#e4f0f8",
-          "#c9e1f1",
-          "#a9d0ea",
-          "#86bde3",
-          "#69abd8",
-          "#4f9dce",
-          "#3686bb"
+          "#f3f7fa",
+          "#d6eaf4",
+          "#9dcfdf",
+          "#7bc8ad",
+          "#f4dc86",
+          "#f6b46b",
+          "#e87e60"
         ],
-        "under": "#eef0f2",
-        "over": "#1f6fa5"
+        "under": "#f3f7fa",
+        "over": "#aa4c55"
       },
-      "group": "Circulation and ocean"
+      "group": "Circulation and ocean",
+      "view": "total",
+      "view_label": "Mean"
     },
     {
       "id": "olr_anom",
@@ -517,7 +541,7 @@
     {
       "id": "wind850_anom",
       "variable": "wind",
-      "label": "Wind anomaly",
+      "label": "850 hPa wind anomaly",
       "short_label": "Wind anomaly",
       "description": "Ensemble-mean wind about 1.5 km above sea level minus the model normal. Shading is the size of the departure; arrows show its direction.",
       "kind": "wind",
@@ -534,106 +558,33 @@
           8
         ],
         "colors": [
-          "#e4f0f8",
-          "#c9e1f1",
-          "#a9d0ea",
-          "#86bde3",
-          "#69abd8",
-          "#4f9dce"
+          "#f3f7fa",
+          "#d6eaf4",
+          "#9dcfdf",
+          "#7bc8ad",
+          "#f4dc86",
+          "#f6b46b"
         ],
-        "under": "#eef0f2",
-        "over": "#3686bb"
+        "under": "#f3f7fa",
+        "over": "#e87e60"
       },
-      "group": "Circulation and ocean"
+      "group": "Circulation and ocean",
+      "view": "anomaly",
+      "view_label": "Anomaly"
     }
   ],
-  "skill": {
-    "metrics": [
-      {
-        "id": "bss",
-        "label": "Tercile Brier skill score",
-        "short_label": "BSS",
-        "description": "How much better the below- and above-normal chances were than always saying one in three. Above 0 beats climatology; 1 is perfect."
-      },
-      {
-        "id": "acc",
-        "label": "Anomaly correlation",
-        "short_label": "ACC",
-        "description": "Correlation between the ensemble-mean anomaly and the observed anomaly across cases. 1 is perfect; 0 is none."
-      },
-      {
-        "id": "crpss",
-        "label": "CRPS skill score",
-        "short_label": "CRPSS",
-        "description": "How much closer the whole bias-corrected ensemble was to what happened than a climatological ensemble. Above 0 beats climatology."
-      },
-      {
-        "id": "msss",
-        "label": "Mean-square skill score",
-        "short_label": "MSSS",
-        "description": "How much smaller the ensemble-mean anomaly error was than the error of forecasting the normal. Above 0 beats climatology."
-      }
-    ],
-    "legends": {
-      "score": {
-        "boundaries": [
-          -0.2,
-          -0.1,
-          -0.05,
-          -0.02,
-          0.02,
-          0.05,
-          0.1,
-          0.2,
-          0.4
-        ],
-        "colors": [
-          "#a8691c",
-          "#d39a45",
-          "#e8b872",
-          "#eef0f2",
-          "#c3ddf0",
-          "#86bde3",
-          "#4f9dce",
-          "#1f6fa5"
-        ],
-        "under": "#7a4a10",
-        "over": "#154f78"
-      },
-      "acc": {
-        "boundaries": [
-          0.1,
-          0.2,
-          0.3,
-          0.4,
-          0.5,
-          0.6,
-          0.7,
-          0.8
-        ],
-        "colors": [
-          "#e4f0f8",
-          "#c9e1f1",
-          "#a9d0ea",
-          "#86bde3",
-          "#4f9dce",
-          "#1f6fa5",
-          "#154f78"
-        ],
-        "under": "#eef0f2",
-        "over": "#0e3857"
-      }
+  "variables": [
+    {
+      "id": "rain",
+      "label": "Rainfall"
     },
-    "truths": {
-      "era5": "ERA5 reanalysis",
-      "imerg": "IMERG satellite rainfall"
+    {
+      "id": "t2m",
+      "label": "Temperature"
     },
-    "seasons": {
-      "all": "All year",
-      "djf": "Dec–Feb starts",
-      "mam": "Mar–May starts",
-      "jja": "Jun–Aug starts",
-      "son": "Sep–Nov starts"
+    {
+      "id": "wind",
+      "label": "Wind"
     }
-  }
+  ]
 }

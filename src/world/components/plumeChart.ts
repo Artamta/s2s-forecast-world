@@ -5,8 +5,8 @@ import type { Plume } from "../types";
 const WIDTH = 520;
 const HEIGHT = 190;
 const MARGIN = { left: 40, right: 12, top: 10, bottom: 26 };
-const FORECAST = "#1f6fa5";
-const NORMAL = "#8a949d";
+const FORECAST = "#245b78";
+const NORMAL = "#8a96a5";
 
 interface PlumeOptions {
   title: string;

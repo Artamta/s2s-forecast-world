@@ -1,11 +1,12 @@
-# World outlook
+# World outlook pipeline
 
-A second page of this site (`world.html`) that shows the same model run for any
-region of the world. One global run per issue is reduced to a compact store;
-every region is a mask over it, defined in `world/config/regions.json`.
+Produces everything the page shows. One global run per issue is reduced to a
+compact store; every region is a mask over it, defined in
+`world/config/regions.json`.
 
-Nothing here is wired into the automated publisher. `public/data/world/` is
-git-ignored and all private outputs live under
+The repository lives at `/home/raj.ayush/s2s/s2s-forecast-world` on the
+cluster. The published data in `public/data/world/` is committed; all private
+outputs live under
 `/storage/raj.ayush/s2s_final_data/final_iteration/world_dashboard_v1/`
 (`compact/`, `climate_v1/`, `skill_v1/`, `static/`, `logs/`, `screenshots/`).
 
@@ -21,7 +22,7 @@ world/slurm/submit_issue.sh ifs 20261007
 sbatch world/slurm/geo_weights.sbatch                      # after editing regions.json
 sbatch --export=ALL,REGIONS_ONLY=1 world/slurm/slot_climate.array.sbatch   # then region climate
 sbatch --export=ALL,ISSUE=20261007,SOURCE=ifs world/slurm/export_issue.sbatch
-sbatch world/slurm/hindcast_scores.array.sbatch && sbatch world/slurm/export_skill.sbatch
+sbatch world/slurm/hindcast_scores.array.sbatch && sbatch world/slurm/export_skill.sbatch   # skill; not shown on the site at present
 sbatch world/slurm/circ_climate.array.sbatch               # once: wind, OLR, SST climate (heavy I/O)
 sbatch --export=ALL,CHECKS="reduction climate india alignment skill" world/slurm/crosscheck.sbatch
 sbatch world/slurm/tests.sbatch                            # tests/world
@@ -30,18 +31,17 @@ sbatch world/slurm/site_check.sbatch                       # tsc, vite build, va
 
 To look at the page: build, then
 `python world/pipeline/serve_site.py --root dist --port 4173` and open
-`http://127.0.0.1:4173/world.html`.
+`http://127.0.0.1:4173/`.
 
 ## Publishing
 
-The public copy is the repository `Artamta/s2s-forecast-world`, served by GitHub
-Pages at https://artamta.github.io/s2s-forecast-world/. To update it after a
-new export:
+GitHub Pages serves this repository at
+https://artamta.github.io/s2s-forecast-world/ and rebuilds on every push to
+`main`:
 
 ```bash
-world/publish/export_repo.sh /home/raj.ayush/s2s/s2s-forecast-world   # copies files only
-cd /home/raj.ayush/s2s/s2s-forecast-world
-git add -A && git commit -m "Publish IFS issue YYYYMMDD" && git push   # the push deploys
+sbatch --nodelist=cn14 world/slurm/site_check.sbatch   # type-check, build, validate, screenshots
+git add -A && git commit -m "Publish IFS issue YYYYMMDD" && git push
 ```
 
 Country shapes and borders come from Natural Earth's India-view edition
@@ -73,4 +73,4 @@ registry hash. No GPU run is needed.
 
 - `grid.py timing.py weights.py regions.py climate.py probability.py scores.py quantize.py` — pure functions.
 - `pipeline/` — one script per step; `slurm/` — one launcher per script.
-- `src/world/` — the page; `tests/world/` — unit tests.
+- `src/world/` and `index.html` — the page; `tests/world/` — unit tests; `science/` — shared formulas.

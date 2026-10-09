@@ -1,4 +1,4 @@
-import { GEO_ROOT, loadJson } from "../lib/data";
+import { GEO_ROOT, loadJson, loadMember } from "../lib/data";
 import type { DetailIndex, EncodedLines } from "../types";
 import { decodeLines, type Line } from "./lines";
 import { visibleBox, type Viewport } from "./viewport";
@@ -34,7 +34,7 @@ export class Geography {
     if (!this.outlines.has(regionId)) {
       this.outlines.set(
         regionId,
-        loadJson<EncodedLines>(`${GEO_ROOT}regions/${regionId}.json`)
+        loadMember<EncodedLines>(`${GEO_ROOT}regions/`, regionId)
           .then((document) => decodeLines(document.outline, document.quantum))
           .catch(() => []),
       );
@@ -65,7 +65,7 @@ export class Geography {
 
   private fetchTile(path: string): void {
     this.tiles.set(path, "loading");
-    loadJson<EncodedLines>(`${GEO_ROOT}${path}`)
+    loadMember<EncodedLines>(`${GEO_ROOT}detail/`, path.slice("detail/".length, -".json".length))
       .then((document) => {
         this.tiles.set(path, decodeLines(document.coast, document.quantum));
         this.listeners.forEach((listener) => listener());

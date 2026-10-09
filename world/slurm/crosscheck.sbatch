@@ -9,7 +9,7 @@
 #SBATCH --time=00:30:00
 
 set -uo pipefail
-source "${WORLD_REPO:-/home/raj.ayush/s2s/fuxi-s2s-dashboard-dev}/world/slurm/env.sh"
+source "${WORLD_REPO:-/home/raj.ayush/s2s/s2s-forecast-world}/world/slurm/env.sh"
 STATUS=0
 for CHECK in ${CHECKS:?}; do
   "${PYTHON}" -u world/pipeline/crosscheck.py "${CHECK}" --source "${SOURCE:-ifs}" --issue "${ISSUE:-20261007}" || STATUS=1

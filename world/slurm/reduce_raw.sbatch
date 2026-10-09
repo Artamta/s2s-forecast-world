@@ -10,7 +10,7 @@
 #SBATCH --time=02:00:00
 
 set -euo pipefail
-source "${WORLD_REPO:-/home/raj.ayush/s2s/fuxi-s2s-dashboard-dev}/world/slurm/env.sh"
+source "${WORLD_REPO:-/home/raj.ayush/s2s/s2s-forecast-world}/world/slurm/env.sh"
 : "${RAW_DIR:?}" "${ISSUE:?}" "${SOURCE:?}"
 "${PYTHON}" -u world/pipeline/reduce_raw_members.py \
   --raw-dir "${RAW_DIR}" --issue "${ISSUE}" --source "${SOURCE}" \

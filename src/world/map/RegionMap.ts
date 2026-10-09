@@ -1,6 +1,7 @@
 import type { FieldData } from "../lib/data";
 import { formatLatitude, formatLongitude } from "../lib/format";
 import type { View } from "../types";
+import { contourSegments } from "./contours";
 import type { Geography } from "./geography";
 import { strokeLines, type Line } from "./lines";
 import type { Shader } from "./shading";
@@ -16,8 +17,9 @@ import {
   type Viewport,
 } from "./viewport";
 
-const NO_DATA = "#f7f8f9";
-const INK = "#1c2b36";
+const NO_DATA = "#f7f9fa";
+const INK = "#162033";
+const CONTOUR_STEP = 8;
 const SEA_OPACITY = 0.3;
 const GRATICULE_STEPS = [1.5, 3, 5, 10, 15, 30, 45];
 
@@ -39,7 +41,10 @@ interface Layers {
   wind: FieldData | null;
   outline: Line[];
   selection: MapPoint | null;
-  mask: ((latitude: number, longitude: number) => boolean) | null;
+  /** Draw isolines of the shaded value at the shader's levels. */
+  contours: boolean;
+  /** Outline of the country under the pointer. */
+  highlight: Line[];
   /** Land share at a position; when set, shading over sea is drawn faint. */
   land: ((latitude: number, longitude: number) => number) | null;
 }
@@ -51,7 +56,7 @@ export class RegionMap {
   private readonly raster = document.createElement("canvas");
   private viewport: Viewport = { lon: 0, lat: 0, scale: 1, aspect: 1, width: 1, height: 1 };
   private view: View = { west: -180, east: 180, south: -90, north: 90 };
-  private layers: Layers = { shader: null, week: 0, smooth: true, wind: null, outline: [], selection: null, mask: null, land: null };
+  private layers: Layers = { shader: null, week: 0, smooth: true, wind: null, outline: [], selection: null, contours: false, highlight: [], land: null };
   private frame = 0;
   private timer = 0;
   private readonly observer: ResizeObserver;
@@ -135,13 +140,18 @@ export class RegionMap {
     context.fillStyle = NO_DATA;
     context.fillRect(0, 0, this.viewport.width, this.viewport.height);
     this.drawField();
-    if (this.layers.mask) this.drawHatch(this.layers.mask);
+    if (this.layers.contours) this.drawContours();
     this.drawGraticule();
     const coast = this.geography.detailedCoast(this.viewport) ?? this.geography.coast;
-    strokeLines(context, this.viewport, this.geography.borders, "rgb(28 43 54 / 32%)", 0.6);
-    strokeLines(context, this.viewport, coast, "rgb(255 255 255 / 60%)", 2.2);
-    strokeLines(context, this.viewport, coast, "rgb(28 43 54 / 75%)", 0.8);
+    strokeLines(context, this.viewport, this.geography.borders, "rgb(255 255 255 / 35%)", 1.8);
+    strokeLines(context, this.viewport, this.geography.borders, "rgb(28 43 54 / 72%)", 0.9);
+    strokeLines(context, this.viewport, coast, "rgb(255 255 255 / 40%)", 2);
+    strokeLines(context, this.viewport, coast, "rgb(28 43 54 / 95%)", 1.1);
     if (this.layers.wind) this.drawWind(this.layers.wind);
+    if (this.layers.highlight.length) {
+      strokeLines(context, this.viewport, this.layers.highlight, "rgb(255 255 255 / 90%)", 3.2);
+      strokeLines(context, this.viewport, this.layers.highlight, "#117c7e", 1.6);
+    }
     if (this.layers.outline.length) {
       strokeLines(context, this.viewport, this.layers.outline, "rgb(255 255 255 / 80%)", 3.4);
       strokeLines(context, this.viewport, this.layers.outline, INK, 1.4);
@@ -182,21 +192,31 @@ export class RegionMap {
     this.context.drawImage(this.raster, 0, 0, cols * step, rows * step);
   }
 
-  /** Diagonal hatching over every block of pixels the mask selects. */
-  private drawHatch(mask: (latitude: number, longitude: number) => boolean): void {
-    const size = 9;
-    const context = this.context;
-    context.beginPath();
-    for (let y = 0; y < this.viewport.height; y += size) {
-      for (let x = 0; x < this.viewport.width; x += size) {
-        const { latitude, longitude } = unproject(this.viewport, x + size / 2, y + size / 2);
-        if (Math.abs(latitude) > 90 || !mask(latitude, longitude)) continue;
-        context.moveTo(x, y + size);
-        context.lineTo(x + size, y);
+  /** Thin isolines of the shaded value, sampled on a coarse screen grid. */
+  private drawContours(): void {
+    const { shader, week } = this.layers;
+    if (!shader?.valueAt || !shader.levels) return;
+    const cols = Math.ceil(this.viewport.width / CONTOUR_STEP) + 1;
+    const rows = Math.ceil(this.viewport.height / CONTOUR_STEP) + 1;
+    const values = new Float32Array(cols * rows);
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        const { latitude, longitude } = unproject(this.viewport, col * CONTOUR_STEP, row * CONTOUR_STEP);
+        values[row * cols + col] = Math.abs(latitude) > 90 ? Number.NaN : shader.valueAt(week, latitude, longitude);
       }
     }
-    context.strokeStyle = "rgb(28 43 54 / 30%)";
-    context.lineWidth = 1;
+    const context = this.context;
+    context.beginPath();
+    for (const level of shader.levels) {
+      const segments = contourSegments(values, cols, rows, level);
+      for (let index = 0; index < segments.length; index += 4) {
+        context.moveTo(segments[index] * CONTOUR_STEP, segments[index + 1] * CONTOUR_STEP);
+        context.lineTo(segments[index + 2] * CONTOUR_STEP, segments[index + 3] * CONTOUR_STEP);
+      }
+    }
+    context.strokeStyle = "rgb(22 32 51 / 34%)";
+    context.lineWidth = 0.7;
+    context.lineCap = "round";
     context.stroke();
   }
 
