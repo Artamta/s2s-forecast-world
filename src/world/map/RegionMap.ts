@@ -20,6 +20,7 @@ import {
 const NO_DATA = "#f7f9fa";
 const INK = "#162033";
 const CONTOUR_STEP = 8;
+const CONTOUR_LABEL_GAP = 130;
 const SEA_OPACITY = 0.3;
 const GRATICULE_STEPS = [1.5, 3, 5, 10, 15, 30, 45];
 
@@ -192,7 +193,7 @@ export class RegionMap {
     this.context.drawImage(this.raster, 0, 0, cols * step, rows * step);
   }
 
-  /** Thin isolines of the shaded value, sampled on a coarse screen grid. */
+  /** Labelled isolines of the shaded value, sampled on a coarse screen grid. */
   private drawContours(): void {
     const { shader, week } = this.layers;
     if (!shader?.valueAt || !shader.levels) return;
@@ -206,18 +207,48 @@ export class RegionMap {
       }
     }
     const context = this.context;
+    const labels: Array<{ text: string; x: number; y: number }> = [];
     context.beginPath();
     for (const level of shader.levels) {
       const segments = contourSegments(values, cols, rows, level);
       for (let index = 0; index < segments.length; index += 4) {
-        context.moveTo(segments[index] * CONTOUR_STEP, segments[index + 1] * CONTOUR_STEP);
-        context.lineTo(segments[index + 2] * CONTOUR_STEP, segments[index + 3] * CONTOUR_STEP);
+        const [x1, y1] = [segments[index] * CONTOUR_STEP, segments[index + 1] * CONTOUR_STEP];
+        const [x2, y2] = [segments[index + 2] * CONTOUR_STEP, segments[index + 3] * CONTOUR_STEP];
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        this.offerContourLabel(labels, String(level).replace("-", "−"), (x1 + x2) / 2, (y1 + y2) / 2);
       }
     }
-    context.strokeStyle = "rgb(22 32 51 / 34%)";
-    context.lineWidth = 0.7;
+    context.strokeStyle = "rgb(22 32 51 / 62%)";
+    context.lineWidth = 1;
     context.lineCap = "round";
     context.stroke();
+    this.drawContourLabels(labels);
+  }
+
+  /** Keep a label only if it sits inside the map and well away from the labels already kept. */
+  private offerContourLabel(labels: Array<{ text: string; x: number; y: number }>, text: string, x: number, y: number): void {
+    const margin = 28;
+    if (x < margin || y < margin || x > this.viewport.width - margin || y > this.viewport.height - margin) return;
+    const crowded = labels.some((label) => Math.hypot(label.x - x, label.y - y) < CONTOUR_LABEL_GAP);
+    if (!crowded) labels.push({ text, x, y });
+  }
+
+  private drawContourLabels(labels: Array<{ text: string; x: number; y: number }>): void {
+    const context = this.context;
+    context.font = "600 11px Inter, system-ui, sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.lineJoin = "round";
+    context.lineWidth = 3.5;
+    context.strokeStyle = "rgb(255 255 255 / 92%)";
+    context.fillStyle = INK;
+    for (const label of labels) {
+      context.strokeText(label.text, label.x, label.y);
+      context.fillText(label.text, label.x, label.y);
+    }
+    context.textAlign = "left";
+    context.textBaseline = "alphabetic";
   }
 
   private drawGraticule(): void {
