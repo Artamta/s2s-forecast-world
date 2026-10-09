@@ -229,9 +229,7 @@ export function renderForecast(root: HTMLElement, app: App, issue: Issue, url: U
     clear(foot);
     foot.append(
       createLegend(state.product, legendFor(app, state.product)),
-      h("p", { class: "wnote" },
-        state.product.kind === "tercile" ? "Grey: near normal or no clear lean. " : "",
-        `${state.product.description}${driftWarning()}`),
+      h("p", { class: "wnote" }, `${state.product.description}${driftWarning()}`),
     );
     renderCard();
     syncUrl();

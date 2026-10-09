@@ -28,12 +28,11 @@ export function renderAbout(root: HTMLElement, app: App, issue: Issue): () => vo
         "Weeks are consecutive seven-day blocks from the issue date. Rainfall is the weekly total; temperature is the weekly mean two metres above the surface; wind is at 850 hPa, about 1.5 km up.",
       ),
       block(
-        "Normal, anomaly and outlook",
+        "Normal and anomaly",
         manifest.climate
-          ? `Normal is the model's own climate: ${manifest.climate.members_per_year}-member hindcasts for ${manifest.climate.years[0]}–${manifest.climate.years[1]} at the same lead and time of year. An anomaly is the departure from that normal.`
-          : "This issue was exported without the model climate, so only absolute values are shown.",
-        "The outlook is the share of ensemble members below, within and above the middle third of that climate. These are raw ensemble fractions and are not calibrated against observations.",
-        "Where a week is normally almost rainless, it is treated as dry season and no rainfall outlook is given.",
+          ? `Normal is the model's own climate: ${manifest.climate.members_per_year}-member hindcasts for ${manifest.climate.years[0]}–${manifest.climate.years[1]} at the same lead and time of year. An anomaly is the ensemble mean minus that normal, so the model's average bias is removed.`
+          : "This issue was exported without the model climate, so only totals and means are shown.",
+        "Totals and means are the average of all ensemble members. The Regions page also gives the range that the middle 80% of members fall in.",
       ),
       block(
         "Regions and the grid",

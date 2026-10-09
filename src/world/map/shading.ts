@@ -9,6 +9,12 @@ export function parseHex(hex: string): Rgb {
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
 }
 
+/** Dark or white text, whichever reads on a fill colour. */
+export function inkOn(hex: string): string {
+  const [red, green, blue] = parseHex(hex);
+  return 0.299 * red + 0.587 * green + 0.114 * blue > 125 ? "#162033" : "#ffffff";
+}
+
 /** Colour of a value on a stepped legend. */
 export function binColor(value: number, legend: BinLegend): string {
   const { boundaries, colors, under, over } = legend;

@@ -10,8 +10,6 @@ import type {
   RegionsDocument,
   SummaryDocument,
   TercileLegend,
-  TercileProduct,
-  Variable,
 } from "../types";
 import { DATA_ROOT, GRID_COLS, GRID_ROWS, gridCell, loadBinary, loadJson } from "./data";
 
@@ -69,9 +67,23 @@ export async function loadIssue(entry: CatalogIssue): Promise<Issue> {
   return { manifest, base, summary };
 }
 
-/** Maps offered in the menu whose field this issue carries, in catalogue order. */
+const VIEW_ORDER = ["total", "anomaly", "outlook"];
+
+/** Maps offered in the menu whose field this issue carries: by variable, totals and means first. */
 export function menuProducts(app: App, manifest: IssueManifest): Product[] {
-  return app.products.products.filter((product) => product.view !== undefined && product.field in manifest.fields);
+  const variables = app.products.variables.map((item) => item.id as string);
+  const rank = (product: Product): number =>
+    variables.indexOf(product.variable) * 10 + VIEW_ORDER.indexOf(product.view as string);
+  return app.products.products
+    .filter((product) => product.view !== undefined && product.field in manifest.fields)
+    .sort((a, b) => rank(a) - rank(b));
+}
+
+/** Stepped legend of a value map, by product id. */
+export function binLegendOf(app: App, productId: string): BinLegend {
+  const product = app.products.products.find((item) => item.id === productId);
+  if (!product || product.kind === "tercile") throw new Error(`no value map ${productId}`);
+  return legendFor(app, product) as BinLegend;
 }
 
 export function legendFor(app: App, product: Product): BinLegend | TercileLegend {
@@ -80,14 +92,6 @@ export function legendFor(app: App, product: Product): BinLegend | TercileLegend
     if (owner?.kind === "field" && owner.legend) return owner.legend;
   }
   if (!("legend" in product) || !product.legend) throw new Error(`product ${product.id} has no legend`);
-  return product.legend;
-}
-
-export function tercileLegendOf(app: App, variable: Variable): TercileLegend {
-  const product = app.products.products.find(
-    (item): item is TercileProduct => item.kind === "tercile" && item.variable === variable,
-  );
-  if (!product) throw new Error(`no outlook product for ${variable}`);
   return product.legend;
 }
 

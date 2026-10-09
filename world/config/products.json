@@ -186,9 +186,7 @@
           "above": "#18708e"
         }
       },
-      "group": "Rainfall",
-      "view": "outlook",
-      "view_label": "Outlook"
+      "group": "Rainfall"
     },
     {
       "id": "rain_anom",
@@ -326,9 +324,7 @@
           "above": "#c2442e"
         }
       },
-      "group": "Temperature",
-      "view": "outlook",
-      "view_label": "Outlook"
+      "group": "Temperature"
     },
     {
       "id": "t2m_anom",

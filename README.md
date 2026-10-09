@@ -40,9 +40,8 @@ Pushing to `main` builds and deploys the page with GitHub Pages
 
 ## Reading the page
 
-- Outlook maps show the most likely of three categories (below, near, above
-  the model's normal for the time of year) and its chance. These are raw
-  ensemble fractions and are not calibrated against observations.
+- Maps show the ensemble-mean weekly total or mean, and its anomaly: the
+  departure from the model's own normal for the time of year.
 - Value maps (anomalies, totals, wind speed) carry contour lines at the
   legend's steps. The Play button steps through the six weeks.
 - The model grid is 1.5° (about 165 km). Small islands and countries span only
